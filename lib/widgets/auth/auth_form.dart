@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 class AuthForm extends StatefulWidget {
-  const AuthForm({super.key});
-
+  const AuthForm({super.key, required this.submitFn});
+  final void Function(
+      String email, String username, String password, bool isLogin) submitFn;
   @override
   State<AuthForm> createState() => _AuthFormState();
 }
@@ -12,6 +13,7 @@ class _AuthFormState extends State<AuthForm> {
   var _userEmail = '';
   var _userPass = '';
   var _isLogin = true;
+
   final _formKey = GlobalKey<FormState>();
   void _trySubmit() {
     // ignore: no_leading_underscores_for_local_identifiers
@@ -20,9 +22,10 @@ class _AuthFormState extends State<AuthForm> {
     FocusScope.of(context).unfocus();
     if (isValid) {
       _formKey.currentState?.save();
-      debugPrint(_userName);
-      debugPrint(_userEmail);
-      debugPrint(_userPass);
+      widget.submitFn(_userEmail, _userName, _userPass, _isLogin);
+      // debugPrint(_userName);
+      // debugPrint(_userEmail);
+      // debugPrint(_userPass);
     }
   }
 
