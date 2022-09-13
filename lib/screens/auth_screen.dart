@@ -26,7 +26,7 @@ class _AuthScreenState extends State<AuthScreen> {
       } else {
         rslt = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
-        debugPrint(rslt.user.uid);
+        // debugPrint(rslt.user.uid);
 
         await FirebaseFirestore.instance
             .collection('users')
