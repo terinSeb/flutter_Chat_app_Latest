@@ -1,5 +1,8 @@
 // import 'package:cloud_firestore/cloud_firestore.dart';
+// ignore_for_file: avoid_unnecessary_containers
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatelessWidget {
@@ -8,6 +11,34 @@ class ChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Flutter chat'),
+        actions: [
+          DropdownButton(
+              icon: const Icon(Icons.more_vert),
+              items: [
+                DropdownMenuItem(
+                  value: 'logout',
+                  child: Container(
+                    child: Row(
+                      children: const [
+                        Icon(Icons.exit_to_app),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text('Logout')
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+              onChanged: (itemIdentifier) {
+                if (itemIdentifier == 'logout') {
+                  FirebaseAuth.instance.signOut();
+                }
+              })
+        ],
+      ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('chat/nQKx3oO8Ns3toiaOeu1b/message')
@@ -21,7 +52,6 @@ class ChatScreen extends StatelessWidget {
           final documnets = snapshot.data!.docs;
           return ListView.builder(
               itemCount: documnets.length,
-              // ignore: avoid_unnecessary_containers
               itemBuilder: (ctx, index) => Container(
                     padding: const EdgeInsets.all(8),
                     child: Text(documnets[index]['text']),
