@@ -1,7 +1,8 @@
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // ignore_for_file: avoid_unnecessary_containers
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:chat_app_flutter/widgets/chat/messages.dart';
+import 'package:chat_app_flutter/widgets/chat/new_message.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -39,32 +40,11 @@ class ChatScreen extends StatelessWidget {
               })
         ],
       ),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('chat/nQKx3oO8Ns3toiaOeu1b/message')
-            .snapshots(),
-        builder: (ctx, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircleAvatar(),
-            );
-          }
-          final documnets = snapshot.data!.docs;
-          return ListView.builder(
-              itemCount: documnets.length,
-              itemBuilder: (ctx, index) => Container(
-                    padding: const EdgeInsets.all(8),
-                    child: Text(documnets[index]['text']),
-                  ));
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          FirebaseFirestore.instance
-              .collection('chat/nQKx3oO8Ns3toiaOeu1b/message')
-              .add({'text': 'This was added by plus button'});
-        },
-        child: const Icon(Icons.add),
+      body: Container(
+        child: Column(
+          // ignore: prefer_const_literals_to_create_immutables
+          children: [const Expanded(child: Messages()), const NewMessage()],
+        ),
       ),
     );
   }
