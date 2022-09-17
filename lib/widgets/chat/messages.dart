@@ -33,6 +33,7 @@ class Messages extends StatelessWidget {
                       isMe: chatDocs[index]['userId'] ==
                           user!.uid, //  futureSnapshot.data!.uid,
                       key: ValueKey(chatDocs[index].hashCode),
+                      userId: chatDocs[index]['userId'],
                     ));
           }));
     });
