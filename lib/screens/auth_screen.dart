@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -16,7 +19,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
 // ignore: non_constant_identifier_names
   void _SubmitAuthForm(String email, String password, String username,
-      bool isLogin, BuildContext ctx) async {
+      File image, bool isLogin, BuildContext ctx) async {
     try {
       // ignore: prefer_typing_uninitialized_variables, unused_local_variable
       var rslt;
@@ -27,14 +30,16 @@ class _AuthScreenState extends State<AuthScreen> {
         rslt = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
         // debugPrint(rslt.user.uid);
-
+        final ref = FirebaseStorage.instance
+            .ref()
+            .child('user_image')
+            .child(rslt.user.uid + '.jpg');
+        await ref.putFile(image);
+        final url = await ref.getDownloadURL();
         await FirebaseFirestore.instance
             .collection('users')
             .doc(rslt.user.uid.toString())
-            .set({
-          'username': username,
-          'email': email,
-        });
+            .set({'username': username, 'email': email, 'image_url': url});
       }
     } on PlatformException catch (exp) {
       var message = 'An error occured, please check your credencials';

@@ -1,11 +1,19 @@
+import 'dart:io';
+
 import 'package:chat_app_flutter/pickers/user_image_picker.dart';
 import 'package:flutter/material.dart';
 
 class AuthForm extends StatefulWidget {
   const AuthForm({super.key, required this.submitFn});
 
-  final void Function(String email, String password, String username,
-      bool isLogin, BuildContext ctx) submitFn;
+  final void Function(
+      String email,
+      String password,
+      String username,
+      // ignore: non_constant_identifier_names
+      File Image,
+      bool isLogin,
+      BuildContext ctx) submitFn;
 
   final bool isLoading = false;
   @override
@@ -17,6 +25,10 @@ class _AuthFormState extends State<AuthForm> {
   var _userEmail = '';
   var _userPass = '';
   var _isLogin = true;
+  File? _userImageFile;
+  void _pickedImage(File image) {
+    _userImageFile = image;
+  }
 
   final _formKey = GlobalKey<FormState>();
   void _trySubmit() {
@@ -24,10 +36,20 @@ class _AuthFormState extends State<AuthForm> {
 
     final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
+
+    // ignore: unnecessary_null_comparison
+    if (_userImageFile == null && !_isLogin) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text('Please pick an Image'),
+        backgroundColor: Theme.of(context).errorColor,
+      ));
+      return;
+    }
+
     if (isValid) {
       _formKey.currentState?.save();
       widget.submitFn(_userEmail.trim(), _userPass.trim(), _userName.trim(),
-          _isLogin, context);
+          _userImageFile!, _isLogin, context);
       // debugPrint(_userName);
       // debugPrint(_userEmail);
       // debugPrint(_userPass);
@@ -47,7 +69,7 @@ class _AuthFormState extends State<AuthForm> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (!_isLogin) const UserImagePicker(),
+                    if (!_isLogin) UserImagePicker(imagePickerFn: _pickedImage),
                     TextFormField(
                       key: const ValueKey('email'),
                       validator: (value) {
